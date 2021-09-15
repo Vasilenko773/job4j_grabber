@@ -33,14 +33,19 @@ public class AlertRabbit {
     public static class Rabbit implements Job {
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
+
+
             Properties ps = new Properties();
             try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
                 ps.load(in);
-                ps.getProperty("hibernate.connection.username");
-                ps.getProperty("hibernate.connection.password");
+                System.out.println(ps.getProperty("hibernate.connection.username"));
+                System.out.println(ps.getProperty("hibernate.connection.password"));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 }
+
+
