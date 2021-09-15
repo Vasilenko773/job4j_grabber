@@ -9,5 +9,4 @@ public class TigerTest {
     public void test() {
         Assert.assertEquals(1, new Tiger().someLogic());
     }
-
 }
