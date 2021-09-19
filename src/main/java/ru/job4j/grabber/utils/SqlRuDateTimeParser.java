@@ -19,7 +19,7 @@ import java.util.*;
 
 public class SqlRuDateTimeParser implements DateTimeParser {
 
-    private static Map<String, String> MONTHS = Map.ofEntries(
+    private static Map<String, String> months = Map.ofEntries(
             Map.entry("янв", "1"),
             Map.entry("фев", "2"),
             Map.entry("мар", "3"),
@@ -41,7 +41,7 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         LocalDate lD = null;
 
         if (date.length == 3) {
-            lD = LocalDate.parse(String.format("%s %s %s", date[0], MONTHS.get(date[1]), date[2]), DateTimeFormatter.ofPattern("d M yy"));
+            lD = LocalDate.parse(String.format("%s %s %s", date[0], months.get(date[1]), date[2]), DateTimeFormatter.ofPattern("d M yy"));
 
         } else if (date[0].contains("сегодня")) {
             lD = LocalDate.now();
