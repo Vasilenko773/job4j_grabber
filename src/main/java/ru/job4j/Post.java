@@ -52,28 +52,25 @@ public class Post {
                 + '}';
     }
 
-    public static List<String> loadData(String url) throws Exception {
+    public static String loadData(String url) throws Exception {
         Document doc = Jsoup.connect(url).get();
-        Elements row = doc.select(".msgTable");
-        List<String> rsl = new ArrayList();
+        Elements row = doc.select(".msgBody");
+        Element message = row.get(1);
 
-        for (Element td : row) {
-            Element message = td.children().get(0).children().get(1).children().get(1);
-            Element date = td.children().get(0).children().get(2).children().get(0);
-            String[] dateArray = date.text().split(", ");
-            String[] dateArray2 = dateArray[1].split(" ");
+        Elements row1 = doc.select(".msgFooter");
+        Element date = row1.get(0);
 
-            String day = dateArray[0] + ", " + dateArray2[0];
+        String[] dateArray = date.text().split(", ");
+        String[] dateArray2 = dateArray[1].split(" ");
+        String day = dateArray[0] + ", " + dateArray2[0];
 
-            rsl.add("СООБЩЕНИЕ: " + message + "ДАТА: " + day);
-        }
-        return rsl;
+        return message.text() + " ДАТА СООБЩЕНИЯ: " + day;
     }
 
     public static void main(String[] args) throws Exception {
-        List<String> exp = loadData("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
-        for (String s : exp) {
-            System.out.println(s);
-        }
+       String exp = loadData("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
+
+            System.out.println(exp);
+
     }
 }
