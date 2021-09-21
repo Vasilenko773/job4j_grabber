@@ -21,13 +21,15 @@ import static org.quartz.SimpleScheduleBuilder.*;
 public class AlertRabbit {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Properties ps = new Properties();
 
         try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             ps.load(in);
-
-            try (Connection cn = getConnection()) {
+            Class.forName(ps.getProperty("hibernate.connection.driver_class"));
+            try (Connection cn = DriverManager.getConnection(ps.getProperty("hibernate.connection.url"),
+                    ps.getProperty("hibernate.connection.username"),
+                    ps.getProperty("hibernate.connection.password"))) {
 
                 Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
                 scheduler.start();
@@ -46,11 +48,7 @@ public class AlertRabbit {
                 scheduler.scheduleJob(job, trigger);
                 Thread.sleep(1000);
                 scheduler.shutdown();
-            } catch (Exception se) {
-                se.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -59,6 +57,7 @@ public class AlertRabbit {
         String url = "jdbc:postgresql://127.0.0.1:5432/schema";
         String login = "postgres";
         String password = "password";
+
         return DriverManager.getConnection(url, login, password);
     }
 
