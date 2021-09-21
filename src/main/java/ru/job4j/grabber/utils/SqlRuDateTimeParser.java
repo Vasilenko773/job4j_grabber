@@ -54,21 +54,12 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         return LocalDateTime.of(lD, lT);
     }
 
-    public List<String> url() {
-        ArrayList<String> rsl = new ArrayList<>();
-        rsl.add("https://www.sql.ru/forum/job-offers");
-        rsl.add("https://www.sql.ru/forum/job-offers/2");
-        rsl.add("https://www.sql.ru/forum/job-offers/3");
-        rsl.add("https://www.sql.ru/forum/job-offers/4");
-        rsl.add("https://www.sql.ru/forum/job-offers/5");
-        return rsl;
-    }
-
     public static void main(String[] args) throws Exception {
         SqlRuDateTimeParser sqlRuDateTimeParser = new SqlRuDateTimeParser();
-        List<String> pages = sqlRuDateTimeParser.url();
-        for (String list : pages) {
-            Document doc = Jsoup.connect(list).get();
+       int i = 0;
+        while (i < 6) {
+            String url = "https://www.sql.ru/forum/job-offers/" + i++;
+            Document doc = Jsoup.connect(url).get();
             Elements row = doc.select("td[style].altCol");
             for (Element td : row) {
 
