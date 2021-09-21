@@ -67,12 +67,10 @@ public class SqlRuParse implements Parse {
         return message.text() + " ДАТА СООБЩЕНИЯ: " + day;
     }
 
-
     public static void main(String[] args) throws Exception {
-        String doc = "https://www.sql.ru/forum/job-offers";
-        SqlRuParse sql = new SqlRuParse();
-        List<Post> rsl = sql.list(doc);
-        System.out.println(rsl.size());
+        String exp = loadData("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
+            System.out.println(exp);
+
     }
 }
 
