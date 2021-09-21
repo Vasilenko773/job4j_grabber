@@ -22,22 +22,28 @@ public class SqlRuParse implements Parse {
         List<Post> rsl = new ArrayList<>();
         try {
             Document doc = Jsoup.connect(link).get();
-            Elements row = doc.select(".postslisttopic");
-            for (Element ed : row) {
-                if (ed.text().contains("Важно")) {
+            Elements row = doc.select(".forumTable");
+
+            for (Element el : row) {
+
+              //  System.out.println(el.children().attr("href"));
+
+
+                if (el.text().contains("Важно")) {
                     continue;
                 }
-                Post post = new Post();
-                post.setId(Statement.RETURN_GENERATED_KEYS); //неверно
-                System.out.println(post.getId());
-                post.setTitle(ed.child(0).text());
+                SqlRuParse sql = new SqlRuParse();
+             ///  System.out.println(el.parent().attr("href"));
+            //    rsl.add(sql.detail(el.children().attr("href")));
+
+              /*  post.setTitle(ed.child(0).text());
 
                 post.setLink(ed.child(0).attr("href"));
 
                 SqlRuDateTimeParser sql = new SqlRuDateTimeParser();
                 LocalDateTime date = sql.parse(ed.parent().children().get(5).text());
                 post.setCreated(date);
-                rsl.add(post);
+                rsl.add(post);*/
             }
 
         } catch (Exception e) {
@@ -49,7 +55,27 @@ public class SqlRuParse implements Parse {
     @Override
 
     public Post detail(String link) {
-        return null;
+        Post post = new Post();
+         try {
+            Document doc = Jsoup.connect(link).get();
+             Elements row = doc.select(".postslisttopic");
+
+            Element ed = row.first();
+
+            post.setTitle(ed.child(0).text());
+
+            post.setLink(ed.child(0).attr("href"));
+
+            post.setDescription(loadData(post.getLink()));
+
+            SqlRuDateTimeParser sql = new SqlRuDateTimeParser();
+            LocalDateTime date = sql.parse(ed.parent().children().get(5).text());
+            post.setCreated(date);
+
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+        return post;
     }
 
     public static String loadData(String url) throws Exception {
@@ -68,9 +94,16 @@ public class SqlRuParse implements Parse {
     }
 
     public static void main(String[] args) throws Exception {
-        String exp = loadData("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
-            System.out.println(exp);
 
+        SqlRuParse sql = new SqlRuParse();
+
+       // Post exp = sql.detail("https://www.sql.ru/forum/job-offers/1");
+           List<Post> rsl = sql.list("https://www.sql.ru/forum/job-offers/1");
+
+
+      //  System.out.println(rsl.get(10).getTitle());
+       // System.out.println(rsl.get(18).getTitle());
     }
-}
+    }
+
 

@@ -52,25 +52,43 @@ public class Post {
                 + '}';
     }
 
-    public static String loadData(String url) throws Exception {
-        Document doc = Jsoup.connect(url).get();
-        Elements row = doc.select(".msgBody");
-        Element message = row.get(1);
-
-        Elements row1 = doc.select(".msgFooter");
-        Element date = row1.get(0);
-
-        String[] dateArray = date.text().split(", ");
-        String[] dateArray2 = dateArray[1].split(" ");
-        String day = dateArray[0] + ", " + dateArray2[0];
-
-        return message.text() + " ДАТА СООБЩЕНИЯ: " + day;
+    public int getId() {
+        return id;
     }
 
-    public static void main(String[] args) throws Exception {
-       String exp = loadData("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
+    public void setId(int id) {
+        this.id = id;
+    }
 
-            System.out.println(exp);
+    public String getTitle() {
+        return title;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 }
