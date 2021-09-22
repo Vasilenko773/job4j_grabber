@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.Post;
+import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.Parse;
 import ru.job4j.grabber.utils.SqlRuDateTimeParser;
 
@@ -17,35 +18,24 @@ import java.util.List;
 
 public class SqlRuParse implements Parse {
 
+    private final DateTimeParser dateTimeParser;
+
+    public SqlRuParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
+
     @Override
     public List<Post> list(String link) {
         List<Post> rsl = new ArrayList<>();
         try {
             Document doc = Jsoup.connect(link).get();
-            Elements row = doc.select(".forumTable");
-
+            Elements row = doc.select(".postslisttopic");
             for (Element el : row) {
-
-              //  System.out.println(el.children().attr("href"));
-
-
                 if (el.text().contains("Важно")) {
                     continue;
                 }
-                SqlRuParse sql = new SqlRuParse();
-             ///  System.out.println(el.parent().attr("href"));
-            //    rsl.add(sql.detail(el.children().attr("href")));
-
-              /*  post.setTitle(ed.child(0).text());
-
-                post.setLink(ed.child(0).attr("href"));
-
-                SqlRuDateTimeParser sql = new SqlRuDateTimeParser();
-                LocalDateTime date = sql.parse(ed.parent().children().get(5).text());
-                post.setCreated(date);
-                rsl.add(post);*/
+                rsl.add(detail(el.children().attr("href")));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -56,25 +46,27 @@ public class SqlRuParse implements Parse {
 
     public Post detail(String link) {
         Post post = new Post();
-         try {
+        try {
             Document doc = Jsoup.connect(link).get();
-             Elements row = doc.select(".postslisttopic");
+            Elements row = doc.select(".messageHeader");
+            Element name = row.first();
 
-            Element ed = row.first();
+            post.setTitle(name.text());
 
-            post.setTitle(ed.child(0).text());
+            post.setLink(link);
 
-            post.setLink(ed.child(0).attr("href"));
+            post.setDescription(loadData(link));
 
-            post.setDescription(loadData(post.getLink()));
+            String[] date1 = name.parent().parent().children().get(2).text().split(", ");
+            String[] date2 = date1[1].split(" ");
+            String rsl = date1[0] + ", " + date2[0];
 
-            SqlRuDateTimeParser sql = new SqlRuDateTimeParser();
-            LocalDateTime date = sql.parse(ed.parent().children().get(5).text());
-            post.setCreated(date);
-
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
+             SqlRuDateTimeParser sql = new SqlRuDateTimeParser();
+             LocalDateTime date = sql.parse(rsl);
+             post.setCreated(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return post;
     }
 
@@ -94,16 +86,11 @@ public class SqlRuParse implements Parse {
     }
 
     public static void main(String[] args) throws Exception {
-
-        SqlRuParse sql = new SqlRuParse();
-
-       // Post exp = sql.detail("https://www.sql.ru/forum/job-offers/1");
-           List<Post> rsl = sql.list("https://www.sql.ru/forum/job-offers/1");
-
-
-      //  System.out.println(rsl.get(10).getTitle());
-       // System.out.println(rsl.get(18).getTitle());
+        DateTimeParser date = new SqlRuDateTimeParser();
+        SqlRuParse sql = new SqlRuParse(date);
+        List<Post> rsl = sql.list("https://www.sql.ru/forum/job-offers/1");
+        System.out.println(rsl.get(6).getCreated());
     }
-    }
+}
 
 
