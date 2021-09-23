@@ -31,7 +31,7 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
-        try (PreparedStatement ps = cnn.prepareStatement("insert into schema(name, text, link, created) values (?, ?, ?, ?)",
+        try (PreparedStatement ps = cnn.prepareStatement("insert into posts(name, text, link, created) values (?, ?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getDescription());
@@ -52,7 +52,7 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public List<Post> getAll() {
         List<Post> rsl = new ArrayList<>();
-        try (PreparedStatement ps = cnn.prepareStatement("select * from schema")) {
+        try (PreparedStatement ps = cnn.prepareStatement("select * from posts")) {
             try (ResultSet resultSet = ps.executeQuery()) {
 
                 while (resultSet.next()) {
@@ -74,7 +74,7 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public Post findById(int id) {
         Post post = new Post();
-        try (PreparedStatement ps = cnn.prepareStatement("select * from schema where id = ?")) {
+        try (PreparedStatement ps = cnn.prepareStatement("select * from posts where id = ?")) {
             ps.setInt(1, id);
             try (ResultSet resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
@@ -108,9 +108,7 @@ public class PsqlStore implements Store, AutoCloseable {
           List<Post> sqlPost = psql.getAll();
         System.out.println(posts.get(1));
         System.out.println(sqlPost.get(0));
-        System.out.println(psql.findById(1).getCreated());
+        System.out.println(psql.findById(1) == posts.get(1));
         System.out.println(posts.get(1).getCreated());
-
-
     }
 }
