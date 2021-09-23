@@ -61,9 +61,8 @@ public class SqlRuParse implements Parse {
             String[] date2 = date1[1].split(" ");
             String rsl = date1[0] + ", " + date2[0];
 
-             SqlRuDateTimeParser sql = new SqlRuDateTimeParser();
-             LocalDateTime date = sql.parse(rsl);
-             post.setCreated(date);
+            post.setCreated(dateTimeParser.parse(rsl));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
