@@ -1,4 +1,4 @@
-create table schema(
+create table posts(
 id serial primary key,
 	name text,
 	text text,
