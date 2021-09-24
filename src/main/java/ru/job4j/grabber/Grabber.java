@@ -103,7 +103,7 @@ public class Grabber implements Grab {
 
             while (i < 6) {
                 String url = "https://www.sql.ru/forum/job-offers/" + i++;
-                exp = parse.list(url);
+                exp.addAll(parse.list(url));
             }
             for (Post post : exp) {
                 store.save(post);
