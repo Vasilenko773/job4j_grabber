@@ -20,7 +20,7 @@ public class PsqlStore implements Store, AutoCloseable {
 
         try (InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             cfg.load(in);
-            // Class.forName(cfg.getProperty(cfg.getProperty("hibernate.connection.driver_class")));
+
             cnn = DriverManager.getConnection(cfg.getProperty("hibernate.connection.url"),
                     cfg.getProperty("hibernate.connection.username"),
                     cfg.getProperty("hibernate.connection.password"));
@@ -77,18 +77,19 @@ public class PsqlStore implements Store, AutoCloseable {
         try (PreparedStatement ps = cnn.prepareStatement("select * from posts where id = ?")) {
             ps.setInt(1, id);
             try (ResultSet resultSet = ps.executeQuery()) {
-                while (resultSet.next()) {
+                if (resultSet.next()) {
                     post.setId(resultSet.getInt(1));
                     post.setTitle(resultSet.getString("name"));
                     post.setDescription(resultSet.getString("text"));
                     post.setLink(resultSet.getString("link"));
                     post.setCreated(resultSet.getTimestamp("created").toLocalDateTime());
+                    return post;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return post;
+        return null;
     }
 
     @Override

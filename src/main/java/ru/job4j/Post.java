@@ -33,7 +33,7 @@ public class Post {
         }
         Post post = (Post) o;
         return id == post.id && Objects.equals(title, post.title) && Objects.equals(link, post.link)
-                && Objects.equals(created, post.created);
+                && Objects.equals(created.withNano(0), post.created.withNano(0));
     }
 
     @Override
