@@ -10,6 +10,9 @@ import ru.job4j.html.SqlRuParse;
 
 import javax.sound.midi.Patch;
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -44,6 +47,29 @@ public class Grabber implements Grab {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void web(Store store) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+
+                            out.write
+                                    (post.toString().getBytes(Charset.forName("Windows-1251")));
+                            out.write(System.lineSeparator().getBytes());
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
 
@@ -86,13 +112,13 @@ public class Grabber implements Grab {
         }
     }
 
-
     public static void main(String[] args) throws Exception {
         Grabber grab = new Grabber();
         grab.cfg();
         Scheduler scheduler = grab.scheduler();
         Store store = grab.store();
-        DateTimeParser date = new SqlRuDateTimeParser();
-        grab.init(new SqlRuParse(date), store, scheduler);
+        SqlRuDateTimeParser sqlDate = new SqlRuDateTimeParser();
+        grab.init(new SqlRuParse(sqlDate), store, scheduler);
+        grab.web(store);
     }
 }
